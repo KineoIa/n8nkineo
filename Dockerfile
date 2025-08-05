@@ -1,7 +1,6 @@
 FROM n8nio/n8n:latest
 
-ENV N8N_PORT=8080 \
-    N8N_HOST=0.0.0.0 \
+ENV N8N_HOST=0.0.0.0 \
     N8N_LISTEN_ADDRESS=0.0.0.0 \
     N8N_BASIC_AUTH_ACTIVE=true \
     N8N_BASIC_AUTH_USER=admin \
@@ -11,5 +10,4 @@ ENV N8N_PORT=8080 \
 
 EXPOSE 8080
 
-# Este CMD se asegura de usar el valor que Cloud Run pasa como PORT
 CMD ["sh", "-c", "n8n start --port $PORT"]
