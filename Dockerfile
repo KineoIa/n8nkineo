@@ -1,5 +1,6 @@
 FROM n8nio/n8n:latest
 
+# Variables obligatorias para n8n + GCP
 ENV N8N_HOST=0.0.0.0 \
     N8N_LISTEN_ADDRESS=0.0.0.0 \
     N8N_BASIC_AUTH_ACTIVE=true \
@@ -9,6 +10,11 @@ ENV N8N_HOST=0.0.0.0 \
     N8N_EDITOR_BASE_URL=https://n8nkineo-22290566202.europe-west1.run.app \
     WEBHOOK_URL=https://n8nkineo-22290566202.europe-west1.run.app
 
+# Copiamos el script y le damos permisos
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 8080
 
-CMD /bin/bash -c 'PORT_TO_USE=${PORT:-8080} && echo "🟢 Iniciando n8n en puerto $PORT_TO_USE" && n8n start --port $PORT_TO_USE'
+# Usamos el entrypoint
+CMD ["/entrypoint.sh"]
