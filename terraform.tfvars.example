@@ -1,0 +1,4 @@
+project_id = "tu-proyecto-gcp"
+region = "us-central1"
+db_password = "tu-password-seguro-db"
+admin_password = "tu-password-admin-n8n" 

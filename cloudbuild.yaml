@@ -1,0 +1,41 @@
+steps:
+  # Preparar la base de datos si no existe
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Crear instancia de Cloud SQL PostgreSQL si no existe
+        gcloud sql instances create n8n-postgres --database-version=POSTGRES_14 --tier=db-f1-micro --region=us-central1 || true
+        
+        # Crear base de datos
+        gcloud sql databases create n8n --instance=n8n-postgres || true
+        
+        # Crear usuario
+        gcloud sql users create n8n_user --instance=n8n-postgres --password=$_DB_PASSWORD || true
+
+  # Desplegar en Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'n8n-service'
+      - '--image=n8nio/n8n:latest'
+      - '--platform=managed'
+      - '--region=us-central1'
+      - '--allow-unauthenticated'
+      - '--port=5678'
+      - '--memory=2Gi'
+      - '--cpu=1'
+      - '--set-env-vars=N8N_BASIC_AUTH_ACTIVE=true,N8N_BASIC_AUTH_USER=admin,N8N_BASIC_AUTH_PASSWORD=$_ADMIN_PASSWORD,DB_TYPE=postgresdb,DB_POSTGRESDB_HOST=$_DB_HOST,DB_POSTGRESDB_PORT=5432,DB_POSTGRESDB_DATABASE=n8n,DB_POSTGRESDB_USER=n8n_user,DB_POSTGRESDB_PASSWORD=$_DB_PASSWORD,N8N_HOST=$_N8N_HOST,N8N_PROTOCOL=https,NODE_ENV=production'
+      - '--timeout=300'
+
+substitutions:
+  _DB_PASSWORD: 'your-secure-db-password'
+  _ADMIN_PASSWORD: 'your-secure-admin-password'
+  _DB_HOST: 'your-cloud-sql-private-ip'
+  _N8N_HOST: 'your-cloud-run-url'
+
+options:
+  logging: CLOUD_LOGGING_ONLY 
