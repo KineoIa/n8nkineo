@@ -11,10 +11,4 @@ ENV N8N_HOST=0.0.0.0 \
 
 EXPOSE 8080
 
-CMD ["/bin/bash", "-c", '
-  echo "🟢 Iniciando n8n...";
-  echo "📦 PORT recibido: $PORT";
-  PORT_TO_USE=${PORT:-8080};
-  echo "🚀 Usando puerto: $PORT_TO_USE";
-  n8n start --port $PORT_TO_USE
-']
+CMD /bin/bash -c 'PORT_TO_USE=${PORT:-8080} && echo "🟢 Iniciando n8n en puerto $PORT_TO_USE" && n8n start --port $PORT_TO_USE'
