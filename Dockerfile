@@ -9,5 +9,10 @@ ENV N8N_HOST=0.0.0.0 \
     N8N_EDITOR_BASE_URL=https://n8nkineo-22290566202.europe-west1.run.app \
     WEBHOOK_URL=https://n8nkineo-22290566202.europe-west1.run.app
 
-# Cloud Run espera que la app escuche en $PORT, por lo tanto lo seteamos así:
-CMD ["sh", "-c", "n8n start --port ${PORT:-8080}"]
+# Copiar script de inicio
+COPY start.sh /start.sh
+USER root
+RUN echo '#!/bin/sh\nexport N8N_PORT=${PORT:-8080}\nexec n8n start' > /start.sh && chmod +x /start.sh
+USER node
+
+CMD ["/start.sh"]
