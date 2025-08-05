@@ -1,0 +1,13 @@
+.git
+.gitignore
+README.md
+*.md
+.env
+.env.local
+.env.production
+.env.staging
+node_modules
+npm-debug.log
+docker-compose.yml
+*.sh
+*.ps1 

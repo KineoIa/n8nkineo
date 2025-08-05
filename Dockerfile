@@ -1,15 +1,28 @@
 # Usar la imagen oficial de n8n como base
 FROM n8nio/n8n:latest
 
-# Establecer variables de entorno básicas
-ENV NODE_ENV=production
-ENV N8N_PROTOCOL=https
-ENV N8N_LISTEN_ADDRESS=0.0.0.0
-
-# Crear script de inicio que use el puerto de Cloud Run
+# Cambiar a root para configuración
 USER root
-RUN echo '#!/bin/sh\nexport N8N_PORT=${PORT:-5678}\nn8n start' > /startup.sh && chmod +x /startup.sh
+
+# Crear script de inicio que configure n8n para Cloud Run
+RUN cat > /usr/local/bin/start-n8n.sh << 'EOF'
+#!/bin/sh
+# Configurar n8n para Cloud Run
+export N8N_HOST=0.0.0.0
+export N8N_PORT=${PORT:-8080}
+export N8N_LISTEN_ADDRESS=0.0.0.0
+export NODE_ENV=production
+export N8N_PROTOCOL=https
+
+echo "Starting n8n on port $N8N_PORT"
+exec n8n start
+EOF
+
+# Hacer el script ejecutable
+RUN chmod +x /usr/local/bin/start-n8n.sh
+
+# Volver al usuario node
 USER node
 
-# Usar el script de inicio personalizado
-CMD ["/startup.sh"] 
+# Usar el script de inicio
+CMD ["/usr/local/bin/start-n8n.sh"] 
