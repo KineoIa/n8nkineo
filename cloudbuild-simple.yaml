@@ -1,0 +1,21 @@
+steps:
+  # Desplegar n8n simple sin base de datos externa
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        # Desplegar en Cloud Run con configuración mínima
+        gcloud run deploy n8nkineo \
+          --image=n8nio/n8n:latest \
+          --platform=managed \
+          --region=europe-west1 \
+          --allow-unauthenticated \
+          --memory=2Gi \
+          --cpu=1 \
+          --timeout=300 \
+          --max-instances=5 \
+          --set-env-vars="PORT=8080,N8N_PORT=8080,N8N_LISTEN_ADDRESS=0.0.0.0,N8N_BASIC_AUTH_ACTIVE=false,NODE_ENV=production,N8N_PROTOCOL=https"
+
+options:
+  logging: CLOUD_LOGGING_ONLY 
