@@ -9,9 +9,5 @@ ENV N8N_BASIC_AUTH_ACTIVE=true \
 # Copiar script de inicio
 COPY start.sh /start.sh
 
-# Hacer ejecutable el script
-USER root
-RUN chmod +x /start.sh
-USER node
-
-CMD ["/start.sh"]
+# Ejecutar con sh directamente (no necesita chmod)
+CMD ["sh", "/start.sh"]
